@@ -1,0 +1,263 @@
+/* General Styling */
+body {
+    font-family: 'Arial', sans-serif;
+    background-color: #f0f2f5;
+    margin: 0;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+	overflow: hidden;
+}
+
+.header {
+    display: flex;
+    justify-content: space-between;
+    background-color: #3a3a55;
+    padding: 15px;
+    color: white;
+    position: fixed;
+    width: 100%;
+	height: 50px;
+    z-index: 1;
+}
+
+.logo {
+	width: 150px;
+}
+
+.search-bar {
+    padding: 10px;
+    width: 500px;
+    border: 1px solid #aab2d2;
+    border-radius: 30px;
+    font-size: 16px;
+}
+
+.profile-icon {
+    width: 45px;
+    height: 45px;
+    border-radius: 50%;
+}
+
+.main-container {
+    display: flex;
+    margin-top: 80px;
+    height: calc(100vh - 80px);
+}
+
+.jobs-section {
+    width: 60%;
+    margin-left: 20px;
+    overflow-y: auto;
+}
+
+.job-list {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.job-card {
+    background-color: white;
+    padding: 25px;
+    border-radius: 12px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    transition: background-color 0.3s ease;
+}
+
+.job-card:hover {
+    background-color: #e0e3ff;
+}
+
+.job-card h4 {
+    margin: 0;
+    font-size: 20px;
+}
+
+.job-card p {
+    margin: 5px 0;
+}
+
+.project-details {
+	height: 100%;
+	width: 30%;
+	padding: 20px;
+	background-color: white;
+	box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+	margin-left: 20px;
+	border-radius: 12px;
+	display: flex;
+	flex-direction: column;
+	overflow: scroll;
+}
+
+.hidden {
+    display: none;
+}
+
+.project-details h3 {
+    margin-bottom: 10px;
+    font-size: 22px;
+    color: #3a3a55;
+}
+
+/* Sidebar */
+.sidebar {
+    width: 250px;
+    background-color: #3a3a55;
+    padding: 25px;
+    color: white;
+}
+
+.sidebar h3 {
+    font-size: 18px;
+    margin-bottom: 15px;
+}
+
+.sidebar ul {
+    list-style: none;
+    padding: 0;
+}
+
+.sidebar ul li {
+    margin: 15px 0;
+}
+
+.sidebar ul li a {
+    color: white;
+    text-decoration: none;
+    font-size: 16px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.sidebar-option {
+    padding: 15px;
+    background-color: #4a4a72;
+    border-radius: 10px;
+    transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+.sidebar-option:hover {
+    background-color: #5a5a80;
+}
+
+.sidebar-option.selected {
+    background-color: #ff6347; /* Highlighted color for the selected option */
+}
+
+/* Budget Range Filters */
+.budget-range {
+    display: flex;
+    gap: 25px;
+	align-items: center;
+	justify-content: center;
+}
+
+.budget-input {
+    width: 100px;
+    padding: 10px;
+    border: 1px solid #aab2d2;
+    border-radius: 5px;
+}
+/* Card Layout for Budget Search */
+.budget-card {
+    background-color: #3a3a55;
+    padding: 30px 20px;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    margin-bottom: 20px;
+    color: white;
+    margin: 20px 0px;
+}
+
+.card-header h3 {
+    margin: 0;
+    color: #3a3a55;
+}
+
+/* Hide initially */
+.hidden {
+    display: none;
+}
+.budget-input {
+    padding: 10px;
+    width: 120px;
+    border-radius: 5px;
+    border: 1px solid #aab2d2;
+}
+.hidden {
+    display: none !important;
+}
+#show-bid-form-btn {
+    margin-top: 20px;
+    padding: 10px 15px;
+    background-color: #3a3a55;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+#show-bid-form-btn:hover {
+    background-color: #2a2a3d; /* Darker shade on hover */
+}
+
+.bidform {
+    margin-top: 20px; /* Add space above the form */
+}
+
+
+.bidform {
+    display: flex;
+	flex-wrap: wrap;
+    flex-direction: column;
+    width: 100%;
+}
+
+.bidform label {
+    margin: 10px 0 5px;
+}
+
+.bidform input,
+.bidform textarea {
+    padding: 10px;
+    margin-bottom: 15px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+}
+
+.bidform button {
+	padding: 10px;
+	max-width: 100px;
+	border: none;
+	background-color: #28a745;
+	color: white;
+	cursor: pointer;
+	margin-right: 10px;
+}
+
+.bidform button[type="button"] {
+    background-color: #dc3545; /* Cancel button color */
+}	
+.bid-item {
+	    border: 1px solid #ccc;
+	    padding: 10px;
+	    margin: 5px 0;
+	    border-radius: 5px;
+	}
+
+#bid-form-container {
+	margin: 20px
+}
+	
+#bid-form {
+	display: flex;
+	flex-wrap: wrap;
+	flex-direction: row;
+	max-width: 350px;
+	gap: 15px;
+}
+
+

@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    <!-- Link to CSS file in the static/css folder -->
+    <link rel="stylesheet" href="/css/style.css">
+
+    <title>Landing Page</title>
+</head>
+
+<body>
+<!-- top banner -->
+<div class="top-banner">
+    <div class="container">
+        <div class="small-bold-text banner-text">Find the right freelance service, right away</div>
+    </div>
+</div>
+
+<!-- nav bar -->
+<nav>
+    <div class="container main-nav flex">
+        <a href="#" class="company-logo">
+            <!-- Updated path to assets folder -->
+            <img th:src="@{/assets/asset%200.png}" alt="company logo">
+        </a>
+        <div class="nav-links">
+            <ul class="flex">
+                <li><a href="dashboardpage/dashboard.html" class="hover-link">Home</a></li>
+                <li><a href="dashboardpage/dashboard.html" class="hover-link">Categories</a></li>
+                <li><a href="dashboardpage/dashboard.html" class="hover-link">Notifications</a></li>
+                <li><a href="dashboardpage/dashboard.html" class="hover-link">Support/Help</a></li>
+                <li><a href="/api/auth/login" class="hover-link secondary-button">Sign in</a></li>
+                <li><a href="/api/auth/register" class="hover-link primary-button">Sign up</a></li>
+            </ul>
+        </div>
+    </div>
+</nav>
+
+<!-- header section -->
+<header>
+    <div class="container header-section flex">
+        <div class="header-left">
+            <h1>Hire the best freelancers for any job, online.</h1>
+            <div class="content">
+                <ul>
+                    <li>World's largest freelance marketplace</li>
+                    <li>Any job you can possibly think of</li>
+                    <li>Save up to 90% & get quotes for free</li>
+                    <li>Pay only when you're 100% happy</li>
+                </ul>
+            </div>
+            <a href="signuppage/rolesignup.html" class="primary-button get-started-btn">Get Started</a>
+        </div>
+        <div class="header-right">
+            <!-- Updated path to assets folder -->
+            <img th:src="@{/assets/asset%201.jpeg}" alt="hero image">
+        </div>
+    </div>
+</header>
+
+<!-- companies section -->
+<section class="companies-section">
+    <div class="container">
+        <div class="small-bold-text companies-header flex">Freelancers Trusted by Leading Brands</div>
+        <div class="logos flex">
+            <!-- Updated paths to assets folder for each company logo -->
+            <img class="logo" th:src="@{/assets/asset%202.png}" alt="Amazon logo">
+            <img class="logo" th:src="@{/assets/asset%203.png}" alt="Google logo">
+            <img class="logo" th:src="@{/assets/asset%204.png}" alt="TaskRabbit logo">
+            <img class="logo" th:src="@{/assets/asset%205.png}" alt="Airtable logo">
+            <img class="logo" th:src="@{/assets/asset%206.png}" alt="Box logo">
+            <img class="logo" th:src="@{/assets/asset%2018.png}" alt="Philips logo">
+            <img class="logo" th:src="@{/assets/asset%208.png}" alt="Asana logo">
+        </div>
+    </div>
+</section>
+
+<!-- footer -->
+<footer>
+    <div class="container flex footer-container">
+        <a href="#" class="company-logo">
+            <!-- Updated path to assets folder -->
+            <img th:src="@{/assets/asset%200.png}" alt="company logo">
+        </a>
+        <div class="link-column flex">
+            <h4>Product</h4>
+            <a href="#" class="hover-link">Overview</a>
+            <a href="#" class="hover-link">Pricing</a>
+            <a href="#" class="hover-link">Usability Hub</a>
+            <a href="#" class="hover-link">Customers Page</a>
+            <a href="#" class="hover-link">Status Page</a>
+        </div>
+        <div class="link-column flex">
+            <h4>Methodology</h4>
+            <a href="#" class="hover-link">Overview</a>
+            <a href="#" class="hover-link">Pricing</a>
+            <a href="#" class="hover-link">Usability Hub</a>
+            <a href="#" class="hover-link">Customers Page</a>
+            <a href="#" class="hover-link">Status Page</a>
+        </div>
+        <div class="link-column flex">
+            <h4>Resources</h4>
+            <a href="#" class="hover-link">Overview</a>
+            <a href="#" class="hover-link">Pricing</a>
+            <a href="#" class="hover-link">Usability Hub</a>
+            <a href="#" class="hover-link">Customers Page</a>
+            <a href="#" class="hover-link">Status Page</a>
+        </div>
+    </div>
+</footer>
+
+<!-- sub-footer -->
+<div class="sub-footer">
+    <div class="container flex subfooter-container">
+        <a class="hover-link" href="#">Privacy policy</a>
+        <a class="hover-link" href="#">Terms & Condition</a>
+        <a class="hover-link" href="#">Security Information</a>
+        <a class="hover-link" href="#"><i class="fa-brands fa-facebook"></i></a>
+        <a class="hover-link" href="#"><i class="fa-brands fa-twitter"></i></a>
+    </div>
+</div>
+
+<script src="https://kit.fontawesome.com/744a7dc2bd.js" crossorigin="anonymous"></script>
+</body>
+
+</html>

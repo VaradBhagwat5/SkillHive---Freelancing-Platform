@@ -1,0 +1,390 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Freelancer Dashboard</title>
+    <link rel="stylesheet" href="/css/freelancer_dashboard.css" />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css"
+    />
+    <!-- Font Awesome for icons -->
+  </head>
+
+  <body>
+    <div class="header">
+      <img th:src="@{/assets/abc.png}" alt="Freelancer Logo" class="logo" />
+      <input
+        type="text"
+        id="search-bar"
+        class="search-bar"
+        placeholder="Search by Project Title..."
+        oninput="filterProjects()"
+      />
+      <div class="profile">
+        <a href="/Frontend/profilepage/profile.html">
+          <img
+            src="/Frontend/assets/profile-icon1.png"
+            alt="profile-icon"
+            class="profile-icon"
+          />
+        </a>
+      </div>
+    </div>
+
+    <div class="main-container">
+      <div class="sidebar">
+        <h3>Menu</h3>
+        <ul>
+          <li class="sidebar-option selected" id="home-dashboard">
+            <a href="#" onclick="showDashboard()"
+              ><i class="fas fa-home"></i> Home Dashboard</a
+            >
+          </li>
+          <li class="sidebar-option" id="search-client">
+            <a href="#" onclick="switchToSearchClient()"
+              ><i class="fas fa-user"></i> Search by Client Name</a
+            >
+          </li>
+          <li class="sidebar-option" id="search-budget">
+            <a href="#" onclick="switchToSearchBudget()"
+              ><i class="fas fa-dollar-sign"></i> Search by Budget</a
+            >
+          </li>
+          <li class="sidebar-option" id="my-bids">
+            <a href="#" onclick="showMyBids()"
+              ><i class="fas fa-gavel"></i> My Bids</a
+            >
+          </li>
+        </ul>
+      </div>
+
+      <div class="jobs-section">
+        <div class="budget-card hidden" id="budget-card">
+          <div class="budget-range">
+            <label for="min-budget">Min Budget:</label>
+            <input
+              type="number"
+              id="min-budget"
+              class="budget-input"
+              placeholder="Min Budget"
+              oninput="filterProjects()"
+            />
+            <label for="max-budget">Max Budget:</label>
+            <input
+              type="number"
+              id="max-budget"
+              class="budget-input"
+              placeholder="Max Budget"
+              oninput="filterProjects()"
+            />
+          </div>
+        </div>
+        <h2>Jobs</h2>
+        <div id="job-list" class="job-list">
+          <div
+            th:each="project : ${projects}"
+            class="job-card"
+            th:data-id="${project.id}"
+            th:data-title="${project.title}"
+            th:data-client="${project.client != null ? project.client.username : ''}"
+            th:data-budget="${project.budget}"
+            onclick="showProjectDetails(this)"
+          >
+            <h4 th:text="${project.title}">Project Title</h4>
+            <p>
+              <strong>Client:</strong>
+              <span
+                th:text="${project.client != null ? project.client.username : 'Client not assigned'}"
+              ></span>
+            </p>
+            <p>
+              <strong>Deadline:</strong>
+              <span th:text="${project.deadline}">Deadline</span>
+            </p>
+            <p>
+              <strong>Status:</strong>
+              <span th:text="${project.status}">Status</span>
+            </p>
+            <p>
+              <strong>Budget:</strong>
+              <span th:text="${project.budget}">Budget</span>
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <div id="project-details" class="project-details hidden">
+        <h3>Project Details</h3>
+        <p><strong>Title:</strong> <span id="project-title"></span></p>
+        <p><strong>Client:</strong> <span id="project-client"></span></p>
+        <p><strong>Budget:</strong> <span id="project-budget"></span></p>
+        <p><strong>Deadline:</strong> <span id="project-deadline"></span></p>
+        <p><strong>Status:</strong> <span id="project-status"></span></p>
+        <p>
+          <strong>Description:</strong> <span id="project-description"></span>
+        </p>
+        <h2>Your Bids</h2>
+        <div id="bids-list">
+          <!-- JavaScript will populate this section with bids -->
+        </div>
+
+        <button id="show-bid-form-btn" onclick="toggleBidForm()">
+          Place a Bid
+        </button>
+      </div>
+      <div class="bidform hidden" id="bid-form-container">
+        <h2>Place a Bid</h2>
+        <form id="bid-form" onsubmit="placeBid(event)">
+          <label for="amount">Bid Amount:</label>
+          <input type="number" id="amount" name="amount" required />
+          <label for="proposal">Proposal:</label>
+          <textarea id="proposal" name="proposal" required></textarea>
+          <button type="submit">Submit Bid</button>
+          <button type="button" onclick="cancelBidForm()">Cancel</button>
+        </form>
+      </div>
+    </div>
+
+    <div id="my-bids-section" class="hidden">
+      <h2>My Bids</h2>
+      <div id="bids-by-status">
+        <!-- JavaScript will dynamically populate this -->
+      </div>
+    </div>
+
+    <script>
+      let currentSearchType = 'title'; // Default search is by title
+      let currentProjectId = null;
+      function toggleBidForm() {
+      	document.getElementById("bid-form-container").classList.toggle("hidden");
+      	document.getElementById("job-list").classList.toggle("hidden");
+      	document.getElementById("project-details").classList.add("hidden");
+      	document.querySelector('.jobs-section').classList.add("hidden"); // Hide the Jobs header
+      }
+
+      function cancelBidForm() {
+      	document.getElementById("bid-form-container").classList.add("hidden");
+      	document.getElementById("job-list").classList.remove("hidden");
+      	document.getElementById("project-details").classList.remove("hidden");
+      	document.querySelector('.jobs-section h2').classList.remove("hidden"); // Show the Jobs header
+      }
+
+
+
+      // Function to highlight the selected sidebar option
+      function highlightSelectedOption(id) {
+      	const options = document.querySelectorAll('.sidebar-option');
+      	options.forEach(option => option.classList.remove('selected'));
+      	document.getElementById(id).classList.add('selected');
+      }
+
+      function filterProjects() {
+      	const searchTerm = document.getElementById("search-bar").value.toLowerCase();
+      	const minBudget = parseFloat(document.getElementById("min-budget").value) || 0;
+      	const maxBudget = parseFloat(document.getElementById("max-budget").value) || Infinity;
+      	const jobCards = document.querySelectorAll('.job-card');
+
+      	jobCards.forEach((card) => {
+      		let showCard = false;
+      		if (currentSearchType === 'title') {
+      			const projectTitle = card.getAttribute('data-title').toLowerCase();
+      			showCard = projectTitle.includes(searchTerm);
+      		} else if (currentSearchType === 'client') {
+      			const clientName = card.getAttribute('data-client').toLowerCase();
+      			showCard = clientName.includes(searchTerm);
+      		} else if (currentSearchType === 'budget') {
+      			const budget = parseFloat(card.getAttribute('data-budget'));
+      			showCard = budget >= minBudget && budget <= maxBudget;
+      		}
+      		card.style.display = showCard ? 'block' : 'none';
+      	});
+      }
+
+      function switchToSearchClient() {
+      	currentSearchType = 'client';
+      	document.getElementById("search-bar").placeholder = "Search by Client Name...";
+      	document.getElementById("search-bar").value = ''; // Clear the search input
+      	highlightSelectedOption('search-client');
+      	document.getElementById('budget-card').classList.add('hidden');
+      }
+
+      function switchToSearchBudget() {
+      	currentSearchType = 'budget';
+      	document.getElementById("search-bar").placeholder = "Search by Budget (e.g., 1000-5000)...";
+      	document.getElementById("search-bar").value = ''; // Clear the search input
+      	highlightSelectedOption('search-budget');
+      	document.getElementById('budget-card').classList.remove('hidden');
+      }
+
+      function showDashboard() {
+      	currentSearchType = 'title'; // Default back to searching by title
+      	document.getElementById("search-bar").placeholder = "Search by Project Title...";
+      	document.getElementById("search-bar").value = ''; // Clear the search input
+      	highlightSelectedOption('home-dashboard');
+      	document.getElementById('budget-card').classList.add('hidden');
+      }
+
+      function showProjectDetails(card) {
+      	const projectId = card.getAttribute('data-id');
+      	currentProjectId = projectId;
+
+      	// Fetch project details using the project ID
+      	fetch('/api/projects/${projectId}')
+      		.then(response => response.json())
+      		.then(data => {
+      			document.getElementById('project-title').innerText = data.title;
+      			document.getElementById('project-client').innerText = data.client ? data.client.username : 'Client not assigned';
+      			document.getElementById('project-budget').innerText = data.budget;
+      			document.getElementById('project-deadline').innerText = data.deadline;
+      			document.getElementById('project-status').innerText = data.status;
+      			document.getElementById('project-description').innerText = data.description;
+
+      			document.getElementById('project-details').classList.remove('hidden');
+
+      			// After displaying project details, load bids
+      			 displayBids(projectId);
+      		});
+      }
+
+      async function placeBid(event) {
+      	event.preventDefault();
+
+      	const amount = document.getElementById("amount").value;
+      	const proposal = document.getElementById("proposal").value;
+
+      	if (!currentProjectId) {
+      		alert("No project selected for bidding.");
+      		return;
+      	}
+
+      	const bidData = {
+      		projectId: currentProjectId,
+      		amount: amount,
+      		proposal: proposal,
+      		status: "Pending"
+      	};
+
+      	try {
+      		const response = await fetch("/api/bids/place", {
+      			method: "POST",
+      			headers: {
+      				"Content-Type": "application/json"
+      			},
+      			body: JSON.stringify(bidData)
+      		});
+
+      		if (response.ok) {
+      			alert("Bid placed successfully!");
+
+      			// Hide the bid form and show project details or job list
+      			document.getElementById("bid-form-container").classList.add("hidden");
+      			document.getElementById("project-details").classList.remove("hidden");
+      			document.getElementById("job-list").classList.remove("hidden");
+      			document.querySelector('.jobs-section h2').classList.remove("hidden"); // Show the Jobs header
+
+      			// Clear the form inputs
+      			document.getElementById("amount").value = "";
+      			document.getElementById("proposal").value = "";
+      		} else {
+      			const errorMsg = await response.text();
+      			alert("Failed to place bid: " + errorMsg);
+      		}
+      	} catch (error) {
+      		console.error("Error submitting bid:", error);
+      		alert("An error occurred while submitting the bid. Please try again.");
+      	}
+      }
+
+      function displayBids(projectId) {
+          const bidsList = document.getElementById('bids-list');
+          bidsList.innerHTML = ''; // Clear the previous bids
+
+          // Fetch bids for the current project
+          fetch('/api/bids/project/${projectId}/freelancer')
+              .then(response => response.json())
+              .then(bids => {
+                  if (bids.length === 0) {
+                      bidsList.innerHTML = '<p>No bids placed for this project.</p>';
+                  } else {
+                      bids.forEach(bid => {
+                          const bidItem = document.createElement('div');
+                          bidItem.className = 'bid-item';
+                          bidItem.innerHTML = `
+                              <p><strong>Bid Amount:</strong> ${bid.amount}</p>
+                              <p><strong>Proposal:</strong> ${bid.proposal}</p>
+                              <p><strong>Status:</strong> ${bid.status}</p>
+                          `;
+                          bidsList.appendChild(bidItem);
+                      });
+                  }
+              })
+              .catch(error => {
+                  console.error('Error fetching bids:', error);
+                  bidsList.innerHTML = '<p>Error loading bids.</p>';
+              });
+      }
+
+      function showMyBids() {
+          // Highlight the selected sidebar option
+          highlightSelectedOption('my-bids');
+
+          // Hide other sections and show the My Bids section
+          document.getElementById('job-list').classList.add('hidden');
+          document.getElementById('project-details').classList.add('hidden');
+          document.getElementById('bid-form-container').classList.add('hidden');
+          document.getElementById('my-bids-section').classList.remove('hidden');
+
+          // Fetch the freelancer's bids
+      	fetch('/api/bids/freelancer')
+      	    .then(response => {
+      	        if (!response.ok) {
+      	            throw new Error('Failed to fetch bids');
+      	        }
+      	        return response.json();
+      	    })
+      	    .then(bids => {
+      	        const bidsByStatus = {};
+
+      	        // Update this part to properly handle the grouped response from the backend
+      	        bids.forEach(group => {
+      	            const status = group.status;
+      	            group.bids.forEach(bid => {
+      	                if (!bidsByStatus[status]) {
+      	                    bidsByStatus[status] = [];
+      	                }
+      	                bidsByStatus[status].push(bid);
+      	            });
+      	        });
+
+      	        const bidsContainer = document.getElementById('bids-by-status');
+      	        bidsContainer.innerHTML = ''; // Clear previous content
+      	        for (const [status, bidsList] of Object.entries(bidsByStatus)) {
+      	            const statusSection = document.createElement('div');
+      	            statusSection.className = 'bids-group';
+      	            statusSection.innerHTML = `
+      	                <h3>${status}</h3>
+      	                <div class="bids-list">
+      	                    ${bidsList.map(bid => `
+      	                        <div class="bid-item">
+      	                            <p><strong>Project:</strong> ${bid.projectTitle}</p>
+      	                            <p><strong>Budget:</strong> ${bid.amount}</p>
+      	                            <p><strong>Proposal:</strong> ${bid.proposal}</p>
+      								<p><strong>Client:</strong> ${bid.clientName}</p>
+      	                        </div>
+      	                    `).join('')}
+      	                </div>
+      	            `;
+      	            bidsContainer.appendChild(statusSection);
+      	        }
+      	    })
+      	    .catch(error => {
+      	        console.error('Error fetching bids:', error);
+      	        document.getElementById('bids-by-status').innerHTML = '<p>Error loading bids.</p>';
+      	    });
+
+      }
+    </script>
+  </body>
+</html>

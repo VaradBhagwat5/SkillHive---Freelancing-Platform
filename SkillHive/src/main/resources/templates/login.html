@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Freelancer Login Page</title>
+    <link rel="stylesheet" href="/css/login.css">
+    
+    <script>
+        // JavaScript to delay redirect after successful login
+        function redirectToProfile() {
+            setTimeout(function() {
+                window.location.href = "/profile";  // Redirect to profile page
+            }, 3000);  // 3-second delay before redirecting
+        }
+    </script>
+</head>
+<body>
+    <div class="login-container">
+        <div class="login-box">
+            <img th:src="@{/assets/abc.png}" alt="Freelancer Logo" class="logo">
+            <h2>Welcome back</h2>
+            <div class="divider">Sign in</div>
+
+            <!-- Display error or success message based on login status -->
+            <div th:if="${error}" class="message error">
+                <p th:text="${error}">Login failed!</p>
+            </div>
+            <div th:if="${message}" class="message success" onload="redirectToProfile()">
+                <p th:text="${message}">Login successful! Redirecting to your profile...</p>
+            </div>
+
+            <!-- Form uses POST to submit data to /api/auth/perform_login -->
+            <form action="/api/auth/perform_login" method="post" th:action="@{/api/auth/perform_login}">
+                <input type="text" placeholder="Username" id="username" name="username" required>
+                <input type="password" placeholder="Password" id="password" name="password" required>
+                <div class="options">
+                    <label>
+                        <input type="checkbox"> Remember me
+                    </label>
+                    <a href="#">Forgot Password?</a>
+                </div>
+                <button type="submit" class="login-btn">Log in</button>
+            </form>
+
+            <p class="sign-up">
+                Don't have an account? <a th:href="@{/api/auth/register}">Sign up</a>
+            </p>
+        </div>
+    </div>
+</body>
+</html>

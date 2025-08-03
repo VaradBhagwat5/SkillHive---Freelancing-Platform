@@ -1,0 +1,423 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Client Dashboard</title>
+	<link rel="stylesheet" href="/css/client_dashboard.css">
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+	<link rel="icon" href="/path/to/favicon.ico">
+</head>
+
+<body>
+	<header class="header" role="banner">
+		<div class="logo">Client Dashboard</div>
+		<input type="text" id="search-bar" class="search-bar" placeholder="Search by Project Title..."
+			oninput="filterProjects()" aria-label="Search projects">
+		<div class="profile">
+			<a href="/Frontend/profilepage/profile.html" aria-label="Go to profile">
+				<img src="/Frontend/assets/profile-icon1.png" alt="Profile icon" class="profile-icon">
+			</a>
+		</div>
+	</header>
+
+	<div class="main-container">
+		<aside class="sidebar" role="navigation">
+			<h3>Menu</h3>
+			<ul>
+				<li class="sidebar-option selected">
+					<a href="#" onclick="showDashboard()"><i class="fas fa-home"></i> Home Dashboard</a>
+				</li>
+				<li class="sidebar-option">
+					<a href="#" onclick="showCreateProjectForm()"><i class="fas fa-plus-circle"></i> Create Project</a>
+				</li>
+				<li class="sidebar-option">
+					<a href="#" onclick="showPendingBids()"><i class="fas fa-clock"></i> Pending Bids</a>
+				</li>
+			</ul>
+		</aside>
+
+		<section id="projects-section" class="projects-section" aria-labelledby="projects-heading">
+			<h2 id="projects-heading">Your Projects</h2>
+			<div id="project-list" class="project-list">
+				<div id="job-list" class="job-list">
+					<div class="project-card" th:each="project : ${projects}" th:attr="data-project-id=${project.id}"
+						onclick="showProjectDetails(this)">
+						<h4 th:text="${project.title}">Project Title</h4>
+						<p><strong>Status:</strong> <span th:text="${project.status}">Status</span></p>
+						<p><strong>Budget:</strong> <span th:text="${project.budget}">Budget</span></p>
+						<button type="button" class="edit-btn" onclick="editProject(this)"
+							th:attr="data-project-id=${project.id}">Edit Project</button>
+					</div>
+				</div>
+			</div>
+		</section>
+
+		<section id="project-details-section" class="hidden">
+			<!-- Project details will be displayed here -->
+		</section>
+
+		<section id="bids-section" class="hidden">
+			<!-- Bids and back button will be displayed here -->
+		</section>
+		<section id="pending-bids-section" class="hidden">
+				<h2>Pending Bids</h2>
+				<div id="pending-bids-list" class="bids-list">
+					<!-- Pending bids will be dynamically inserted here -->
+				</div>
+			</section>
+
+		<section id="create-project-form" class="form-section hidden" aria-labelledby="create-project-heading">
+			<div class="centered-container">
+				<div class="form-card">
+					<h3 id="create-project-heading">Create a New Project</h3>
+					<form id="new-project-form">
+						<label for="title">Project Title:</label>
+						<input type="text" id="title" name="title" placeholder="Enter project title" required>
+						<label for="description">Project Description:</label>
+						<textarea id="description" name="description" placeholder="Describe the project"
+							required></textarea>
+						<label for="budget">Budget (in USD):</label>
+						<input type="number" id="budget" name="budget" placeholder="Enter project budget" required>
+						<label for="deadline">Project Deadline:</label>
+						<input type="date" id="deadline" name="deadline" required>
+						<button type="submit" class="primary-btn">Create Project</button>
+					</form>
+				</div>
+			</div>
+		</section>
+
+		<section id="update-project-form" class="form-section hidden" aria-labelledby="update-project-heading">
+			<div class="centered-container">
+				<div class="form-card">
+					<h3 id="update-project-heading">Edit Project</h3>
+					<form id="edit-project-form">
+						<label for="edit-title">Project Title:</label>
+						<input type="text" id="edit-title" name="title">
+						<label for="edit-description">Project Description:</label>
+						<textarea id="edit-description" name="description"></textarea>
+						<label for="edit-budget">Budget (in USD):</label>
+						<input type="number" id="edit-budget" name="budget">
+						<label for="edit-deadline">Project Deadline:</label>
+						<input type="date" id="edit-deadline" name="deadline">
+
+						<button type="submit" class="primary-btn">Save Changes</button>
+						<button type="button" class="secondary-btn" onclick="cancelEdit()">Cancel</button>
+						<button type="button" class="status-btn completed" onclick="updateStatus('COMPLETED')">Mark as
+							Completed</button>
+						<button type="button" class="status-btn cancelled" onclick="updateStatus('CANCELLED')">Mark as
+							Cancelled</button>
+					</form>
+				</div>
+			</div>
+		</section>
+
+		<div id="notification" class="notification hidden"></div>
+	</div>
+	
+
+	<script>
+		document.getElementById('new-project-form').addEventListener('submit', function (event) {
+			event.preventDefault();
+			const title = document.getElementById('title').value;
+			const description = document.getElementById('description').value;
+			const budget = document.getElementById('budget').value;
+			const deadline = document.getElementById('deadline').value;
+			const status = "OPEN";
+
+			fetch('/api/projects/create', {
+				method: 'POST',
+				headers: {'Content-Type': 'application/json'},
+				body: JSON.stringify({title, description, budget, deadline, status})
+			})
+				.then(response => {
+					if (!response.ok) throw new Error('Failed to create project');
+					return response.json();
+				})
+				.then(data => {
+					alert('Project created successfully');
+					location.reload();
+				})
+				.catch(error => {
+					console.error('Error creating project:', error);
+					alert('Failed to create project. Please try again.');
+				});
+		});
+
+		function editProject(button) {
+			const projectId = button.getAttribute("data-project-id");
+			fetch('/api/projects/${projectId}')
+				.then(response => response.ok ? response.json() : Promise.reject('Failed to fetch project'))
+				.then(data => {
+					document.getElementById("edit-title").value = data.title || '';
+					document.getElementById("edit-description").value = data.description || '';
+					document.getElementById("edit-budget").value = data.budget || '';
+					document.getElementById("edit-deadline").value = data.deadline || '';
+					document.getElementById("edit-project-form").dataset.projectId = projectId;
+
+					showUpdateProjectForm();
+				})
+				.catch(error => console.error("Error fetching project:", error));
+		}
+
+		function submitEditProject(event) {
+			event.preventDefault();
+			const projectId = document.getElementById("edit-project-form").dataset.projectId;
+			const title = document.getElementById("edit-title").value || null;
+			const description = document.getElementById("edit-description").value || null;
+			const budget = document.getElementById("edit-budget").value || null;
+			const deadline = document.getElementById("edit-deadline").value || null;
+
+			fetch('/api/projects/update/${projectId}', {
+				method: 'PUT',
+				headers: {'Content-Type': 'application/json'},
+				body: JSON.stringify({title, description, budget, deadline})
+			})
+				.then(response => {
+					if (!response.ok) throw new Error('Failed to update project');
+					return response.json();
+				})
+				.then(data => {
+					alert('Project updated successfully');
+					location.reload();
+				})
+				.catch(error => {
+					console.error('Error updating project:', error);
+					alert('Could not update project. Please try again.');
+				});
+		}
+
+		document.getElementById('edit-project-form').addEventListener('submit', submitEditProject);
+
+
+
+		function cancelEdit() {
+			toggleVisibility("update-project-form", false);
+			toggleVisibility("projects-section", true);
+		}
+
+		function toggleVisibility(elementId, show) {
+			const element = document.getElementById(elementId);
+			if (element) {
+				element.style.display = show ? 'block' : 'none';
+			}
+		}
+
+		function showDashboard() {
+			toggleVisibility("projects-section", true);
+			toggleVisibility("create-project-form", false);
+			toggleVisibility("update-project-form", false);
+			toggleVisibility("project-details-section", false);
+			toggleVisibility("bids-section", false);
+		}
+
+		function showCreateProjectForm() {
+			toggleVisibility("create-project-form", true);
+			toggleVisibility("update-project-form", false);
+			toggleVisibility("projects-section", false);
+		}
+
+		function showUpdateProjectForm() {
+			toggleVisibility("update-project-form", true);
+			toggleVisibility("create-project-form", false);
+			toggleVisibility("projects-section", false);
+		}
+
+		function updateStatus(status) {
+			const projectId = document.getElementById("edit-project-form").dataset.projectId;
+			fetch('/api/projects/update-status/${projectId}', {
+				method: 'PATCH',
+				headers: {'Content-Type': 'application/json'},
+				body: JSON.stringify({status})
+			})
+				.then(response => {
+					if (!response.ok) throw new Error('Failed to update project status');
+					return response.json();
+				})
+				.then(data => {
+					alert('Project marked as ${status}');
+					location.reload();
+				})
+				.catch(error => {
+					console.error('Error updating project status:', error);
+					alert('Could not update project status. Please try again.');
+				});
+		}
+		// JavaScript for Sidebar Active Item Highlighting
+		const sidebarOptions = document.querySelectorAll('.sidebar-option');
+
+		sidebarOptions.forEach(option => {
+			option.addEventListener('click', () => {
+				sidebarOptions.forEach(item => item.classList.remove('selected'));
+				option.classList.add('selected');
+			});
+		});
+
+		function showProjectDetails(card) {
+			const projectId = card.getAttribute("data-project-id");
+
+			// Fetch project details
+			fetch('/api/projects/${projectId}')
+				.then(response => {
+					if (!response.ok) throw new Error('Failed to fetch project details');
+					return response.json();
+				})
+				.then(projectData => {
+					// Display project details
+					displayProjectDetails(projectData);
+
+					// Fetch bids related to the project
+					return fetch('/api/bids/project/${projectId}');
+				})
+				.then(response => {
+					if (!response.ok) throw new Error('Failed to fetch bids');
+					return response.json();
+				})
+				.then(bidData => {
+					// Display bids related to the project
+					displayProjectBids(bidData);
+				})
+				.catch(error => console.error("Error fetching project details or bids:", error));
+		}
+
+		// Function to display project details
+		function displayProjectDetails(project) {
+			const projectDetailsSection = document.getElementById("project-details-section");
+			projectDetailsSection.innerHTML = `
+			           <h3>Project Details</h3>
+			           <p><strong>Title:</strong> ${project.title}</p>
+			           <p><strong>Description:</strong> ${project.description}</p>
+			           <p><strong>Status:</strong> ${project.status}</p>
+			           <p><strong>Budget:</strong> ${project.budget}</p>
+			           <p><strong>Deadline:</strong> ${project.deadline}</p>
+			       `;
+			toggleVisibility("project-details-section", true);
+		}
+
+		// Function to display bids for the project
+		// Function to display bids for the project
+		function displayProjectBids(bids) {
+		    const bidsSection = document.getElementById("bids-section");
+		    bidsSection.innerHTML = `
+		        <h2 id="bids-heading">Bids for Project</h2>
+		        <div id="bids-list" class="bids-list">
+		            ${bids.map(bid => `
+		                <!-- Combined Card for Freelancer and Bid Details -->
+		                <div class="combined-bid-card" data-bid-id="${bid.id}">
+							<a href="freelancerProjects.html?freelancerId=${bid.freelancerId}" class="freelancer-card" title="View ${bid.freelancerName}'s Profile">
+							    <div class="freelancer-info">
+							        <img src="/path/to/placeholder-image.jpg" alt="${bid.freelancerName}'s Profile Picture" class="freelancer-photo">
+							        <p><strong>Freelancer:</strong> ${bid.freelancerName}</p>
+							    </div>
+							</a>
+
+
+		                    <div class="bid-details">
+		                        <p><strong>Amount:</strong> ${bid.amount}</p>
+		                        <p><strong>Proposal:</strong> ${bid.proposal}</p>
+		                        
+		                        <!-- Only display Status line if status is PENDING -->
+		                        ${bid.status.toUpperCase() === 'PENDING' ? `
+		                            <p><strong>Status:</strong> ${bid.status}</p>
+		                        ` : ''}
+
+		                        <!-- Status Badge displayed only if status is ACCEPTED or REJECTED -->
+		                        ${bid.status.toUpperCase() === 'ACCEPTED' || bid.status.toUpperCase() === 'REJECTED' ? `
+		                            <span class="status-badge ${bid.status.toUpperCase() === 'ACCEPTED' ? 'accepted' : 'rejected'}">
+		                                ${bid.status.toUpperCase()}
+		                            </span>
+		                        ` : ''}
+
+		                        <!-- Freelancer Email displayed if bid is ACCEPTED -->
+		                        ${bid.status.toUpperCase() === 'ACCEPTED' ? `
+		                            <p><strong>Send resources to:</strong> <span>${bid.freelancerEmail}</span></p>
+		                        ` : ''}
+
+		                        <!-- Conditional rendering of Accept and Reject buttons -->
+		                        ${bid.status.toUpperCase() === 'PENDING' ? `
+		                            <button class="accept-btn" onclick="updateBidStatus(${bid.id}, 'ACCEPTED')">Accept</button>
+		                            <button class="reject-btn" onclick="updateBidStatus(${bid.id}, 'REJECTED')">Reject</button>
+		                        ` : ''}
+		                    </div>
+		                </div>
+		            `).join('')}
+		        </div>
+		        <button type="button" onclick="showDashboard()" class="back-button">Back to Projects</button>
+		    `;
+		    toggleVisibility("bids-section", true);
+		}
+
+
+		function updateBidStatus(bidId, status) {
+			fetch('/api/bids/update-status/${bidId}', {
+				method: 'PATCH',
+				headers: {'Content-Type': 'application/json'},
+				body: JSON.stringify({status: status.toUpperCase()}) // Ensure uppercase status
+			})
+				.then(response => {
+					if (!response.ok) throw new Error('Failed to update bid status');
+					return response.json();
+				})
+				.then(data => {
+					alert('Bid status updated to ${status.toUpperCase()}');
+					location.reload(); // Reload the page or update the display
+				})
+				.catch(error => {
+					console.error('Error updating bid status:', error);
+					alert('Could not update bid status. Please try again.');
+				});
+		}
+		
+		function showPendingBids() {
+			toggleVisibility("pending-bids-section", true);
+			toggleVisibility("projects-section", false);
+			toggleVisibility("create-project-form", false);
+			toggleVisibility("update-project-form", false);
+			toggleVisibility("project-details-section", false);
+			toggleVisibility("bids-section", false);
+
+			fetch('/api/bids/pending')
+			    .then(response => {
+			        if (!response.ok) throw new Error('Failed to fetch pending bids');
+			        return response.json();
+			    })
+			    .then(bids => {
+			        console.log("Received bids:", bids);  // Log the entire response
+			        displayPendingBids(bids);
+			    })
+			    .catch(error => console.error("Error fetching pending bids:", error));
+		}
+
+		function displayPendingBids(bids) {
+		    const pendingBidsList = document.getElementById("pending-bids-list");
+
+		    if (!bids || bids.length === 0) {
+		        pendingBidsList.innerHTML = "<p>No pending bids available.</p>";
+		        return;
+		    }
+
+		    // Log the bids to see what we're working with
+		    console.log("Bids received:", bids);
+
+		    pendingBidsList.innerHTML = bids.map(bid => `
+		        <div class="bid-card" data-bid-id="${bid.id}">
+		            <p><strong>Bidder:</strong> ${bid.bidderName}</p>
+		            <p><strong>Amount:</strong> ${bid.amount}</p>
+		            <p><strong>Message:</strong> ${bid.message}</p>
+		            <div class="actions">
+		                <button class="accept-btn" onclick="updateBidStatus(${bid.id}, 'ACCEPTED')">Accept</button>
+		                <button class="reject-btn" onclick="updateBidStatus(${bid.id}, 'REJECTED')">Reject</button>
+		            </div>
+		        </div>
+		    `).join('');
+		}
+
+
+
+
+
+	</script>
+</body>
+
+</html>

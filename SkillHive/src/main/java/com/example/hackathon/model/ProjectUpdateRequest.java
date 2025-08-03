@@ -1,0 +1,55 @@
+package com.example.hackathon.model;
+import java.time.LocalDate;
+
+import org.springframework.format.annotation.DateTimeFormat;
+
+public class ProjectUpdateRequest {
+    private String title;
+    private String description;
+    private Double budget;
+    private ProjectStatus status; // Ensure status is of type ProjectStatus (enum)
+
+    private LocalDate deadline;
+
+
+    // getters and setters
+    public String getTitle() {
+        return title;
+    }
+
+    public void setTitle(String title) {
+        this.title = title;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public Double getBudget() {
+        return budget;
+    }
+
+    public void setBudget(Double budget) {
+        this.budget = budget;
+    }
+
+    public LocalDate getDeadline() {
+        return deadline;
+    }
+
+    public void setDeadline(LocalDate string) {
+        this.deadline = string;
+    }
+
+    public ProjectStatus getStatus() {
+        return status;
+    }
+
+    public void setStatus(ProjectStatus status) {
+        this.status = status;
+    }
+}

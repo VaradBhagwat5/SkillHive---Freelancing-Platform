@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>User Profile</title>
+</head>
+<body>
+
+    <h1>User Profile</h1>
+
+    <!-- Display profile details -->
+    <form th:action="${isProfilePresent} ? '/profile/update' : '/profile/create'" th:object="${userProfile}" method="post">
+        
+        <label for="firstName">First Name:</label>
+        <input type="text" id="firstName" th:field="*{firstName}" /><br/>
+
+        <label for="lastName">Last Name:</label>
+        <input type="text" id="lastName" th:field="*{lastName}" /><br/>
+
+        <label for="bio">Bio:</label>
+        <textarea id="bio" th:field="*{bio}"></textarea><br/>
+
+        <!-- If profile exists, show 'Update' button, else show 'Create' button -->
+        <button type="submit" th:text="${isProfilePresent} ? 'Update Profile' : 'Create Profile'"></button>
+    </form>
+
+</body>
+</html>

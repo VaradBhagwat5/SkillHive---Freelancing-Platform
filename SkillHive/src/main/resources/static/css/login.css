@@ -1,0 +1,134 @@
+/* Reset styles */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f4f4f4;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+}
+
+/* Login Container Styling */
+.login-container {
+    width: 100%;
+    max-width: 400px;
+    padding: 20px;
+    background-color: #fff;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    border-radius: 10px;
+    margin-top: 20px; /* Add some space above the container */
+}
+
+/* Added spacing above and below the login box */
+.login-box {
+    text-align: center;
+    padding: 20px 0;
+}
+
+/* Logo Styling */
+.login-container .login-box .logo {
+	height: 100px;
+	width: 250px;
+}
+
+/* Header Styles */
+h2 {
+    margin-bottom: 20px;
+    font-size: 1.5rem;
+}
+
+/* Divider Styling */
+.divider {
+    margin: 20px 0;
+    font-size: 1rem;
+    color: #888;
+    position: relative;
+}
+
+.divider:before, .divider:after {
+    content: "";
+    position: absolute;
+    top: 50%;
+    width: 40%;
+    height: 1px;
+    background: #ccc;
+}
+
+.divider:before {
+    left: 0;
+}
+
+.divider:after {
+    right: 0;
+}
+
+/* Input Styling */
+input[type="text"], input[type="password"] {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    font-size: 1rem;
+}
+
+/* Focus Styles for Input Fields */
+input[type="text"]:focus, input[type="password"]:focus {
+    border-color: #007bff;
+    box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
+}
+
+/* Login Button Styling */
+.login-btn {
+    width: 100%;
+    padding: 10px;
+    margin: 10px 0;
+    background-color: #007bff;
+    border: none;
+    border-radius: 5px;
+    color: white;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.login-btn:hover {
+    background-color: #0056b3;
+}
+
+/* Message Styling with space added above and below */
+.message {
+    margin: 15px 0; /* Added space above and below the message */
+    padding: 10px;
+    border-radius: 5px;
+    font-size: 0.9rem;
+}
+
+/* Specific Styling for Error and Success Messages */
+.message.error {
+    color: red;
+    background-color: #f8d7da;
+    border: 1px solid #f5c6cb;
+}
+
+.message.success {
+    color: green;
+    background-color: #d4edda;
+    border: 1px solid #c3e6cb;
+}
+
+/* Sign-up Link Styling */
+.sign-up {
+    margin-top: 20px;
+}
+
+.sign-up a {
+    color: #007bff;
+    text-decoration: none;
+}

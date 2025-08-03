@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Create Account</title>
+    <link rel="stylesheet" href="/css/register.css">
+</head>
+<body>
+    <div class="container">
+        <div class="logo">
+            <img src="/freelancing_website/Frontend/assets/asset 0.png" alt="Upwork Logo">
+        </div>
+        <h1>Create Your Account</h1>
+
+        <!-- Error and Success Message -->
+        <div th:if="${error}" class="alert alert-danger">
+            <p th:text="${error}"></p> <!-- No "Error" prefix, only the message itself -->
+        </div>
+        <div th:if="${message}" class="alert alert-success">
+            <p th:text="${message}"></p> <!-- No "Success" prefix, only the message itself -->
+        </div>
+
+        <!-- Sign Up Form -->
+        <form id="signup-form" action="/api/auth/perform_register" method="POST" onsubmit="return validateForm()">
+            <input type="text" name="username" placeholder="Username" required>
+            <input type="email" name="email" placeholder="Email" required>
+            <input type="password" name="password" placeholder="Password (8 or more characters)" required minlength="8">
+            <select name="roles" required>
+                <option value="" disabled selected>Select your role</option>
+                <option value="FREELANCER">Freelancer</option>
+                <option value="CLIENT">Client</option>
+            </select>
+
+            <div class="checkbox-container">
+                <input type="checkbox" id="email-checkbox" name="email-checkbox">
+                <label for="email-checkbox">Send me helpful emails to find rewarding work and job leads.</label>
+            </div>
+
+            <div class="checkbox-container">
+                <input type="checkbox" id="agreement-checkbox" name="agreement-checkbox" required>
+                <label for="agreement-checkbox">I agree to the <a href="#">Terms of Service</a> and <a href="#">Privacy Policy</a>.</label>
+            </div>
+
+            <button type="submit" class="submit-btn">Create my account</button>
+        </form>
+
+        <div class="footer">
+            Already have an account? <a href="../loginpage/login.html">Log In</a>
+        </div>
+    </div>
+</body>
+</html>
